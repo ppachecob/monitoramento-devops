@@ -5,8 +5,14 @@ services:
     volumes:
       - ./backups:/app/backups
     restart: always
+    # O healthcheck deve ficar aqui, dentro do serviço
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import os; exit(0 if os.path.exists('/proc/self/stat') else 1)"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
 
-  # Novo serviço: Portainer (Dashboard Visual)
+  # Novo serviço: Portainer
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -17,5 +23,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/var/data
 
+# Volumes globais ficam na raiz do arquivo, totalmente à esquerda
 volumes:
   portainer_data:

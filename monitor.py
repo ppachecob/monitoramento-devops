@@ -1,33 +1,30 @@
-import psutil
-import time
-import logging
+import requests
 import os
+from dotenv import load_dotenv
 
-# Cria a pasta de logs se ela não existir dentro do container
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+load_dotenv()
+WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
-# Configura o logging para escrever no terminal E no arquivo
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("logs/monitoramento.log"), # Salva no arquivo
-        logging.StreamHandler()                        # Mostra no terminal
-    ]
-)
+def enviar_alerta_discord(percentual, status="info"):
+    # Definindo cores (Decimal): Verde (3066993), Vermelho (15158332)
+    cor = 3066993 if status == "ok" else 15158332
+    titulo = "✅ Sistema Estável" if status == "ok" else "🚨 Alerta de Uso de Memória"
 
-LIMIT_CPU = 80.0
+    payload = {
+        "embeds": [{
+            "title": titulo,
+            "color": cor,
+            "fields": [
+                {"name": "Servidor", "value": "Ubuntu-Server-PP", "inline": True},
+                {"name": "Uso de RAM", "value": f"{percentual}%", "inline": True}
+            ],
+            "footer": {"text": "Monitoramento Automático - DevOps 2026"}
+        }]
+    }
+    
+    requests.post(WEBHOOK_URL, json=payload)
 
-def monitorar():
-    while True:
-        cpu_uso = psutil.cpu_percent(interval=1)
-        if cpu_uso > LIMIT_CPU:
-            logging.error(f"ALERTA: Uso crítico de CPU: {cpu_uso}%")
-        else:
-            logging.info(f"Sistema normal - CPU: {cpu_uso}%")
-        time.sleep(5)
-
-if __name__ == "__main__":
-    logging.info("Iniciando monitoramento com persistência de logs...")
-    monitorar()
+# Exemplo de lógica
+uso = 92 # Simulação de uso alto
+if uso > 90:
+    enviar_alerta_discord(uso, status="critico")
