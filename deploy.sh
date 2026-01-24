@@ -1,16 +1,14 @@
 #!/bin/bash
-set -e  # Para o script se houver qualquer erro
-# ... resto do script
 
-echo "🚀 Iniciando atualização do sistema de monitoramento..."
+echo "🚀 Iniciando Deploy com Docker Compose V2..."
 
-# 1. Puxa as últimas mudanças do GitHub
-git pull origin main
+# 1. Garante que não existam fantasmas (Down com remove orphans)
+docker compose down --remove-orphans
 
-# No seu deploy.sh, altere a linha do docker-compose para:
-docker-compose up -d --build --remove-orphans
+# 2. Builda e sobe os containers
+docker compose up -d --build
 
-# 3. Limpa imagens antigas que não estão sendo usadas (manter o servidor limpo)
+# 3. Limpa imagens que não estão sendo usadas (DevOps clean)
 docker image prune -f
 
-echo "✅ Sistema atualizado e rodando!"
+echo "✅ Deploy finalizado com sucesso!"

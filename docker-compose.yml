@@ -2,6 +2,8 @@ services:
   # Seu script de monitoramento atual
   monitoramento-memoria:
     build: .
+    env_file:
+      - .env
     volumes:
       - ./backups:/app/backups
     restart: always
