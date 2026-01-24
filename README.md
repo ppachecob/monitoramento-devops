@@ -29,4 +29,4 @@ O diagrama abaixo ilustra o fluxo de dados desde a coleta no host até a notific
 
 1. Clone o repositório:
    ```bash
-   git clone [https://github.com/ppachecob/one_project.git](https://github.com/ppachecob/one_project.git)
+   git clone [https://github.com/ppachecob/monitoramento-devops.git](https://github.com/ppachecob/monitoramento-devops.git)
