@@ -30,3 +30,12 @@ O diagrama abaixo ilustra o fluxo de dados desde a coleta no host até a notific
 1. Clone o repositório:
    ```bash
    git clone [https://github.com/ppachecob/monitoramento-devops.git](https://github.com/ppachecob/monitoramento-devops.git)
+
+## 🤖 Automação e CI/CD Local
+
+Para otimizar o fluxo de trabalho, foi implementado um pipeline de automação (`automate_all.sh`) que realiza:
+1. **Sincronização**: Pull das últimas atualizações do repositório remoto.
+2. **Deploy**: Build e reinicialização dos containers via Docker Compose V2.
+3. **Backup**: Commit e Push automático do estado atual para o GitHub.
+
+Este script garante a integridade do ambiente e a persistência das métricas monitoradas.
