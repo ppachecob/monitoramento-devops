@@ -41,23 +41,7 @@ Para otimizar o ciclo de desenvolvimento e operação, foi implementado um pipel
 
 Este workflow elimina erros manuais, garante a integridade do ambiente e facilita a manutenção do agente de monitoramento.
 
-Título: Agente de Monitoramento de Recursos com Foco em Resiliência e DevOps
-
-Este projeto foi desenvolvido para monitorar métricas críticas de servidores Ubuntu (CPU, RAM e Disco) em tempo real, integrando notificações via Discord Webhooks. O objetivo principal foi aplicar conceitos avançados de Engenharia de Software e práticas de DevOps para garantir a estabilidade de infraestruturas locais.
-
-Destaques Técnicos:
-
-Docker & Docker Compose V2: Orquestração de serviços para garantir um ambiente isolado e reprodutível.
-
-Automação de CI/CD: Implementação de um pipeline em Bash para sincronização automática com GitHub e deploy contínuo.
-
-Segurança: Gerenciamento de credenciais via variáveis de ambiente (.env) e autenticação segura via SSH.
-
-Python (psutil): Coleta eficiente de métricas do sistema com lógica de alertas baseada em severidade (Atenção/Crítico).
-
-“Com quase duas décadas de experiência em logística, este projeto reflete minha transição para a tecnologia, aplicando a mentalidade de eficiência operacional ao monitoramento de dados e automação de sistemas.”
-
-Título: Agente de Monitoramento de Recursos com Foco em Resiliência e DevOps
+## Título: Agente de Monitoramento de Recursos com Foco em Resiliência e DevOps
 
 Este projeto foi desenvolvido para monitorar métricas críticas de servidores Ubuntu (CPU, RAM e Disco) em tempo real, integrando notificações via Discord Webhooks. O objetivo principal foi aplicar conceitos avançados de Engenharia de Software e práticas de DevOps para garantir a estabilidade de infraestruturas locais.
 
@@ -75,7 +59,7 @@ Python (psutil): Coleta eficiente de métricas do sistema com lógica de alertas
 
 
 
-Title: Resource Monitoring Agent with a Focus on Resilience and DevOps
+## Title: Resource Monitoring Agent with a Focus on Resilience and DevOps
 
 This project consists of a monitoring agent developed in Python to track critical server metrics (CPU, RAM, and Disk) and send real-time alerts via Discord Webhooks. The goal was to implement Software Engineering principles and DevOps practices to ensure infrastructure stability.
 
