@@ -2,11 +2,13 @@ import os
 import psutil
 import requests
 import time
+import json
 from dotenv import load_dotenv
+
 
 # Força o carregamento das variáveis de ambiente
 load_dotenv()
-WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL')
 
 def enviar_alerta_completo(ram, cpu, disco):
     # Calcula o maior uso para definir a gravidade
