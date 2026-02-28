@@ -5,52 +5,78 @@ import time
 import json
 from dotenv import load_dotenv
 
-
-# Força o carregamento das variáveis de ambiente
+# Carrega as configurações do cofre
 load_dotenv()
-WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL')
+WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
-def enviar_alerta_completo(ram, cpu, disco):
-    # Calcula o maior uso para definir a gravidade
-    max_uso = max(ram, cpu, disco)
-    
-    # Cores em Decimal: Vermelho (Crítico) ou Amarelo (Atenção)
-    cor = 15158332 if max_uso >= 95 else 16776960
-    titulo = "🔴 ALERTA CRÍTICO" if max_uso >= 95 else "⚠️ ATENÇÃO: USO ELEVADO"
+def coletar_metricas():
+    # Coleta os dados do hardware do seu i7
+    cpu = psutil.cpu_percent(interval=1)
+    ram = psutil.virtual_memory().percent
+    disco = psutil.disk_usage('/').percent
+    return cpu, ram, disco
 
+def avaliar_e_notificar():
+    cpu, ram, disco = coletar_metricas()
+    max_uso = max(cpu, ram, disco) # Encontra o recurso mais carregado
+
+    # Lógica de Alerta
+    if max_uso > 80:
+        status = "🔴 CRÍTICO"
+        cor = 16711680 # Vermelho em decimal
+    elif max_uso > 60:
+        status = "⚠️ ATENÇÃO"
+        cor = 16776960 # Amarelo em decimal
+    else:
+        return # Se estiver tudo OK, não envia nada para não poluir o Discord
+
+    # Montando a carga (Payload) para o Discord
     payload = {
         "embeds": [{
-            "title": titulo,
+            "title": f"Monitoramento: {status}",
+            "description": f"O recurso mais alto atingiu {max_uso}%",
             "color": cor,
             "fields": [
-                {"name": "🧠 RAM", "value": f"{ram}%", "inline": True},
-                {"name": "⚡ CPU", "value": f"{cpu}%", "inline": True},
-                {"name": "💽 Disco", "value": f"{disco}%", "inline": True}
-            ],
-            "footer": {"text": "Monitoramento Integrado - Ubuntu Server"},
-            "timestamp": time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.gmtime())
+                {"name": "CPU", "value": f"{cpu}%", "inline": True},
+                {"name": "RAM", "value": f"{ram}%", "inline": True},
+                {"name": "Disco", "value": f"{disco}%", "inline": True}
+            ]
         }]
     }
-    
+
+    if WEBHOOK_URL:
+        requests.post(WEBHOOK_URL, json=payload)
+        print(f"Alerta enviado: {status}")
+
+# No início do seu script, fora do loop
+contagem_critica = 0
+LIMITE_PERSISTENCIA = 3 # Precisa falhar 3 vezes seguidas (3 minutos)
+
+# No seu loop principal, logo após coletar as métricas:
+if __name__ == "__main__":
+    print("🚀 Monitoramento inteligente iniciado...", flush=True)
     try:
-        # Envia a requisição e armazena a resposta
-        r = requests.post(WEBHOOK_URL, json=payload)
-        # O flush=True garante que o log apareça na hora no Docker
-        print(f"📡 Status Discord: {r.status_code} | Maior Uso: {max_uso}%", flush=True)
-    except Exception as e:
-        print(f"🚨 Erro ao enviar para o Discord: {e}", flush=True)
+        while True:
+            cpu, ram, disco = coletar_metricas()
+            max_uso = max(cpu, ram, disco)
 
-print("🚀 Monitoramento de Recursos (RAM, CPU, Disco) Iniciado...", flush=True)
+            # --- ADICIONE ESTA LINHA ABAIXO ---
+            print(f"I'm alive! [CPU: {cpu}% | RAM: {ram}% | Disk: {disco}%]", flush=True)
+            # ---------------------------------
 
-while True:
-    # Coleta de métricas
-    ram = psutil.virtual_memory().percent
-    cpu = psutil.cpu_percent(interval=1) # O intervalo de 1s é ideal para precisão
-    disco = psutil.disk_usage('/').percent
-    
-    # Lógica de disparo
-    if max(ram, cpu, disco) >= 80:
-        enviar_alerta_completo(ram, cpu, disco)
-    
-    # Aguarda 60 segundos para a próxima verificação
-    time.sleep(60)
+            if max_uso > 80:
+                contagem_critica += 1
+                print(f"⚠️ Uso alto detectado: {max_uso}% ({contagem_critica}/{LIMITE_PERSISTENCIA})")
+                
+                # Só dispara o alerta se atingir o limite
+                if contagem_critica >= LIMITE_PERSISTENCIA:
+                    avaliar_e_notificar() # Sua função de envio
+                    contagem_critica = 0 # Reset após o alerta
+            else:
+                if contagem_critica > 0:
+                    print("✅ Uso normalizado. Contador resetado.")
+                contagem_critica = 0 # Reseta o contador se o uso baixar
+
+            time.sleep(60) # Intervalo de 1 minuto
+    except KeyboardInterrupt:
+        print("\n🛑 Encerrado.")

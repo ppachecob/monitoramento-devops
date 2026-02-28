@@ -1,17 +1,25 @@
-FROM python:3.9-slim
+# Use an official Python runtime as a parent image
+FROM python:3.11-slim
 
-# 1. Define onde os arquivos vão ficar dentro do container
-WORKDIR /monitor/one_project
+# Set the working directory in the container
+WORKDIR /app
 
-# 2. Copia o arquivo de requisitos PRIMEIRO
+# Install system dependencies needed for psutil
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the requirements file into the container
+# (create a requirements.txt with: psutil, requests)
 COPY requirements.txt .
 
-# 3. Agora sim, instala as bibliotecas
+# Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4. Depois copia o seu script
-COPY monitor.py .
+# Copy the rest of the application code
+COPY . .
 
-# 5. Comando para iniciar
+# Run the scripst when the container launches
 CMD ["python", "monitor.py"]
 
